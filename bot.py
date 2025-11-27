@@ -31,10 +31,7 @@ def open_whitelist():
         return []
 
 whitelist = open_whitelist()                                      
-snipe_message = None
-snipe_author = None
 channame = 'crashed-by-icsu'
-icsu_pfp = open("icsu.png", "rb")
 
     
 
@@ -307,4 +304,5 @@ async def вайтлист(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
