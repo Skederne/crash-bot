@@ -1,6 +1,7 @@
-import discord, asyncio, datetime, json
+import discord, asyncio, datetime, json, aiofile
 from discord.ext import commands
 from datetime import timedelta
+from aiofile import async_open
 from config import token, txt, allowed_ids
 
 
@@ -304,5 +305,6 @@ async def вайтлист(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
