@@ -82,9 +82,9 @@ async def create_hook(ctx):
         async with async_open('icsu.png','rb') as pfp:
             await webhook.edit(avatar=await pfp.read())
 
-        asyncio.create_task(spam_hook(webhook))  
+        asyncio.create_task(spm_hook(webhook))  
 
-async def spam_hook(webhook):
+async def spm_hook(webhook):
     for i in range(30):
         try:
             await webhook.send(txt)
@@ -301,6 +301,7 @@ async def вайтлист(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
 
