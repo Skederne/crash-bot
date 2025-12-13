@@ -47,10 +47,13 @@ async def on_guild_join(guild):
     guildlink = None
     for textchan in guild.text_channels:
         if not guildlink:
-            guildlink = str(await textchan.create_invite())
-            if guildlink:
-                    emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
-                    await channel.send(embed=emb)
+            try:
+                guildlink = str(await textchan.create_invite())
+            except:
+                pass
+        if guildlink:
+            emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
+            await logs_channel.send(embed=emb)
     
     
 @bot.event
@@ -343,6 +346,7 @@ async def вайтлист(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
 
