@@ -49,7 +49,7 @@ async def on_guild_join(guild):
             guildlink = str(await textchan.create_invite())
             if guildlink:
                 emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
-                await logs_channel.send(embed=emb)
+                await channel.send(embed=emb)
     
     
 @bot.event
@@ -290,6 +290,7 @@ async def whitelist(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
 
