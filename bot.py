@@ -18,7 +18,7 @@ bot = commands.Bot(command_prefix = '-', intents=intents,  case_insensitive=True
 @bot.event
 async def on_ready():
         print(f'Bot is turned on as {bot.user.name}!')
-        await bot.change_presence(status=discord.Status.idle, activity=discord.Activity(type=discord.ActivityType.streaming, name="-help"))
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.streaming, name="-help"))
 
 def open_whitelist():
     try:
@@ -290,5 +290,6 @@ async def whitelist(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
