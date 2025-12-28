@@ -276,10 +276,10 @@ async def whitelist(ctx, serv_id: int):
         await ctx.send(embed=emb)
         return
     
-    if serv_id not in whitelist:
-        whitelist.append(serv_id)
+    if serv_id not in wllist:
+        wllist.append(serv_id)
         with open('whitelist.json', 'w') as data:
-            json.dump(whitelist, data)
+            json.dump(wllist, data)
         emb = discord.Embed(title=f'{serv_id} был добавлен в белый лист!', colour=discord.Colour.green())
         await ctx.send(embed=emb)
     else:
@@ -290,6 +290,7 @@ async def whitelist(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
 
