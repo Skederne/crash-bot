@@ -290,9 +290,3 @@ async def whitelist(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
-
-
-
-
-
-
