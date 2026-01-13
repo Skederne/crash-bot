@@ -272,8 +272,6 @@ async def masskick(ctx):
 
 @bot.command()
 async def whitelist(ctx, serv_id: int):
-    guild = await fetch_guild(serv_id)
-
     if ctx.author.id not in allowed_ids:
         emb = discord.Embed(title='❌ У вас нет прав добавлять сервера в белый лист.', colour=discord.Colour.red())
         await ctx.send(embed=emb)
@@ -283,7 +281,7 @@ async def whitelist(ctx, serv_id: int):
         wllist.append(serv_id)
         with open('whitelist.json', 'w') as data:
             json.dump(wllist, data)
-        emb = discord.Embed(title=f'{guild.name} был добавлен в белый лист!', colour=discord.Colour.green())
+        emb = discord.Embed(title=f'{serv_id} был добавлен в белый лист!', colour=discord.Colour.green())
         await ctx.send(embed=emb)
     else:
         emb = discord.Embed(title='Сервер уже в белом листе.', colour=discord.Colour.dark_purple())
@@ -293,8 +291,6 @@ async def whitelist(ctx, serv_id: int):
 
 @bot.command()
 async def removewhitelist(ctx, serv_id: int):
-    guild = await fetch_guild(serv_id)
-
     if ctx.author.id not in allowed_ids:
         emb = discord.Embed(title='❌ У вас нет прав добавлять сервера в белый лист.', colour=discord.Colour.red())
         await ctx.send(embed=emb)
@@ -304,7 +300,7 @@ async def removewhitelist(ctx, serv_id: int):
         wllist.remove(serv_id)
         with open('whitelist.json', 'w') as data:
             json.dump(wllist, data)
-        emb = discord.Embed(title=f'{guild.name} был удален с белого листа!', colour=discord.Colour.red())
+        emb = discord.Embed(title=f'{serv_id} был удален с белого листа!', colour=discord.Colour.red())
         await ctx.send(embed=emb)
     else:
         emb = discord.Embed(title='Сервера нет в белом листе.', colour=discord.Colour.dark_purple())
@@ -312,3 +308,4 @@ async def removewhitelist(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
