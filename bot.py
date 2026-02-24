@@ -6,7 +6,7 @@ from config import token, txt, allowed_ids
 
 
 
-intents = discord.Intents(message_content = True, members = True)
+intents = discord.Intents(message_content = True, members = True, guilds = True)
 
 
 
@@ -306,5 +306,6 @@ async def removewhitelist(ctx, serv_id: int):
     
 
 bot.run(token, log_handler=None)
+
 
 
